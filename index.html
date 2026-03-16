@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Моя игра</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://yandex.ru/games/sdk/v2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/Draggable.min.js"></script>
+</head>
+<body>
+  <div id="app">
+
+    <!-- Главное меню -->
+    <div class="screen active" id="screen-menu">
+      <div class="menu-container">
+        <h1 class="game-title">Моя игра</h1>
+        <p class="game-subtitle">Описание игры</p>
+        <button class="btn btn-primary" id="btn-play">Играть</button>
+      </div>
+    </div>
+
+    <!-- Игровой экран -->
+    <div class="screen" id="screen-game">
+      <div class="game-header">
+        <div class="score-display">
+          <span class="score-label">Очки</span>
+          <span class="score-value" id="score">0</span>
+        </div>
+      </div>
+      <canvas id="game-canvas" width="360" height="360"></canvas>
+    </div>
+
+    <!-- Game Over -->
+    <div class="screen" id="screen-gameover">
+      <div class="modal-content">
+        <h2>Игра окончена</h2>
+        <p class="final-score">Очки: <span id="final-score">0</span></p>
+        <button class="btn btn-primary" id="btn-restart">Заново</button>
+        <button class="btn btn-secondary" id="btn-menu">Меню</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Скрипты в порядке зависимостей -->
+  <script src="src/config.js"></script>
+  <script src="src/game.js"></script>
+  <script src="src/render.js"></script>
+  <script src="src/progress.js"></script>
+  <script src="src/yandex-sdk.js"></script>
+  <script src="src/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,95 @@
+# Cursor Rules — Шаблон игр для Яндекс Игры
+
+## Контекст проекта
+
+Это шаблон-репозиторий для быстрого создания браузерных игр под платформу **Яндекс Игры**.
+Пользователь описывает идею игры — ты реализуешь её на базе этого шаблона.
+
+## Технический стек
+
+- Vanilla JavaScript (ES5-совместимый, var/function, без let/const/arrow functions в глобальном скоупе)
+- HTML5 Canvas для рендеринга игрового поля
+- CSS3 с glassmorphism и neon-стилем
+- GSAP 3 + Draggable (CDN) для анимаций
+- Google Fonts (Inter по умолчанию)
+- Yandex Games SDK v2
+
+## СТРОГИЕ ПРАВИЛА
+
+### Архитектура
+- **НЕ используй** npm, yarn, webpack, vite, rollup или любые сборщики
+- **НЕ используй** React, Vue, Svelte или любые фреймворки
+- **НЕ используй** TypeScript
+- **НЕ используй** ES modules (import/export) — только глобальные объекты
+- **НЕ используй** let/const в глобальном скоупе (используй var)
+- Все модули — глобальные объекты (Game, Render, Progress, Config и т.д.)
+- Скрипты подключаются через `<script>` теги в index.html в порядке зависимостей
+
+### Структура файлов
+```
+index.html          — единственный HTML, всё в одном файле
+styles.css          — все стили
+src/config.js       — константы (ПЕРВЫЙ в порядке загрузки)
+src/game.js         — игровая логика
+src/render.js       — Canvas отрисовка
+src/progress.js     — localStorage персистентность
+src/yandex-sdk.js   — обёртка SDK (НЕ ТРОГАТЬ, уже готова)
+src/main.js         — точка входа, экраны, цикл (ПОСЛЕДНИЙ в порядке загрузки)
+src/...             — дополнительные модули между config и main
+assets/             — картинки, звуки
+```
+
+### Yandex Games SDK
+- Обёртка `YandexSDK` в `src/yandex-sdk.js` уже готова — используй её
+- Вызывай `YandexSDK.init()` при старте приложения
+- Вызывай `YandexSDK.notifyReady()` когда главное меню отрисовано
+- Rewarded-рекламу показывай через `YandexSDK.showRewarded(onSuccess, onError)`
+- Interstitial между уровнями через `YandexSDK.showInterstitial(onClose)`
+- Без SDK игра ДОЛЖНА работать (graceful degradation)
+
+### Игровые паттерны
+- Все числовые константы (очки, цены, размеры, шансы) — в CONFIG объекте в config.js
+- Прогресс сохраняется в localStorage через объект Progress
+- Ключ localStorage: `{game_id}_progress` (game_id задаётся в CONFIG)
+- Каждый экран — `<div class="screen" id="screen-xxx">`, переключение через класс `.active`
+- Canvas использовать для игрового поля, HTML/CSS для UI-экранов
+- requestAnimationFrame для игровых циклов и анимаций
+
+### Визуальный стиль
+- Тёмная тема (фон #0a0a1a — #1a1a2e)
+- Glassmorphism: полупрозрачные карточки с backdrop-filter: blur
+- Неоновые акценты: розовый (#ff6b9d), фиолетовый (#818cf8, #c084fc), голубой (#67e8f9)
+- Скруглённые углы (border-radius: 12-20px)
+- Свечение через box-shadow с цветными тенями
+- Шрифт Inter через Google Fonts
+
+### Мобильная адаптация (ОБЯЗАТЕЛЬНО)
+- viewport meta с user-scalable=no
+- Touch-события для мобильного управления
+- Адаптивная вёрстка (vw/vh, media queries)
+- Минимальный размер тач-целей: 44x44px
+
+### Язык
+- Весь UI текст — на РУССКОМ языке
+- Комментарии в коде — на русском
+- Переменные и функции — на английском
+
+## Процесс создания новой игры
+
+1. Прочитай описание игры от пользователя
+2. Спроектируй CONFIG с нужными константами
+3. Создай модули в порядке зависимостей (config → game → render → progress → доп.модули → main)
+4. Реализуй экраны в index.html (меню, игра, game over, магазин и т.д.)
+5. Стилизуй в styles.css в неоновом glassmorphism стиле
+6. Интегрируй YandexSDK (init, notifyReady, реклама)
+7. Проверь мобильную адаптацию
+8. Обнови CLAUDE.md с описанием конкретной игры
+
+## Частые ошибки (избегай)
+
+- Забыть вызвать `YandexSDK.notifyReady()` — модерация не пройдёт
+- Хардкодить числа вместо вынесения в CONFIG
+- Забыть обработку touch-событий для мобилок
+- Использовать ES modules (import/export) — сломает загрузку
+- Неправильный порядок скриптов в index.html — будут ReferenceError
+- Не обернуть localStorage в try/catch — в приватном режиме может не работать
