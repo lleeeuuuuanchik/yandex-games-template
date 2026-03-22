@@ -1,82 +1,217 @@
 /**
  * Обёртка Yandex Games SDK v2.
- * Graceful degradation: если SDK недоступен, колбэки вызываются без рекламы.
+ * Graceful degradation — без SDK игра работает, реклама пропускается.
  */
-var YandexSDK = {
-  ysdk: null,
-  _ready: false,
-  _pendingNotifyReady: false,
+var YandexSDK =
+{
+	ysdk: null,
+	_ready: false,
+	_pendingNotifyReady: false,
 
-  init: function (cb) {
-    if (typeof YaGames === 'undefined') {
-      if (cb) cb(false);
-      return;
-    }
-    var self = this;
-    YaGames.init().then(function (ysdk) {
-      self.ysdk = ysdk;
-      self._ready = true;
-      if (cb) cb(true);
-      if (self._pendingNotifyReady) self.notifyReady();
-    }).catch(function () {
-      if (cb) cb(false);
-    });
-  },
+	/**
+	 * @param {function} [cb] — cb(true) если SDK загружен, cb(false) если нет
+	 */
+	init: function (cb)
+	{
+		var self = this;
 
-  /**
-   * Сообщить платформе, что игра загружена и готова к игре (обязательно для модерации).
-   * Вызывать один раз после отображения главного меню / готовности к взаимодействию.
-   */
-  notifyReady: function () {
-    if (this.ysdk && this.ysdk.features && this.ysdk.features.LoadingAPI) {
-      this.ysdk.features.LoadingAPI.ready();
-    } else {
-      this._pendingNotifyReady = true;
-    }
-  },
+		if (typeof YaGames === 'undefined')
+		{
+			i18n.detectFromBrowser();
+			if (cb) cb(false);
+			return;
+		}
 
-  /**
-   * Показать rewarded-рекламу.
-   * @param {function} onSuccess — вызывается после просмотра (onRewarded)
-   * @param {function} [onError] — вызывается при ошибке или если SDK нет
-   */
-  showRewarded: function (onSuccess, onError) {
-    if (!this.ysdk) {
-      if (onError) onError();
-      return;
-    }
-    this.ysdk.adv.showRewardedVideo({
-      callbacks: {
-        onOpen: function () {},
-        onRewarded: function () {
-          if (onSuccess) onSuccess();
-        },
-        onClose: function () {},
-        onError: function () {
-          if (onError) onError();
-        },
-      },
-    });
-  },
+		YaGames.init()
+			.then(function (ysdk)
+			{
+				self.ysdk = ysdk;
+				self._ready = true;
 
-  /**
-   * Показать межстраничную рекламу (между уровнями и т.д.).
-   * @param {function} [onClose]
-   */
-  showInterstitial: function (onClose) {
-    if (!this.ysdk) {
-      if (onClose) onClose();
-      return;
-    }
-    this.ysdk.adv.showFullscreenAdv({
-      callbacks: {
-        onClose: function () {
-          if (onClose) onClose();
-        },
-        onError: function () {
-          if (onClose) onClose();
-        },
-      },
-    });
-  },
+				try { i18n.setLang(ysdk.environment.i18n.lang || 'ru'); }
+				catch (e) { i18n.setLang('ru'); }
+
+				if (cb) cb(true);
+				if (self._pendingNotifyReady) self.notifyReady();
+			})
+			.catch(function ()
+			{
+				i18n.detectFromBrowser();
+				if (cb) cb(false);
+			});
+	},
+
+	/**
+	 * Сообщить платформе о готовности (обязательно для модерации).
+	 */
+	notifyReady: function ()
+	{
+		if (this.ysdk && this.ysdk.features && this.ysdk.features.LoadingAPI)
+			this.ysdk.features.LoadingAPI.ready();
+		else
+			this._pendingNotifyReady = true;
+	},
+
+	gameplayStart: function ()
+	{
+		if (this.ysdk && this.ysdk.features && this.ysdk.features.GameplayAPI)
+			this.ysdk.features.GameplayAPI.start();
+	},
+
+	gameplayStop: function ()
+	{
+		if (this.ysdk && this.ysdk.features && this.ysdk.features.GameplayAPI)
+			this.ysdk.features.GameplayAPI.stop();
+	},
+
+	/**
+	 * Rewarded-реклама. Ставит звук и геймплей на паузу автоматически.
+	 * @param {function} onSuccess — после полного просмотра
+	 * @param {function} [onError]
+	 */
+	showRewarded: function (onSuccess, onError)
+	{
+		if (!this.ysdk)
+		{
+			if (onError) onError();
+			return;
+		}
+
+		var self = this;
+		this.ysdk.adv.showRewardedVideo(
+		{
+			callbacks:
+			{
+				onOpen: function ()
+				{
+					SoundManager.pauseAll();
+					self.gameplayStop();
+				},
+				onRewarded: function ()
+				{
+					if (onSuccess) onSuccess();
+				},
+				onClose: function ()
+				{
+					SoundManager.resumeAll();
+					self.gameplayStart();
+				},
+				onError: function ()
+				{
+					SoundManager.resumeAll();
+					self.gameplayStart();
+					if (onError) onError();
+				},
+			},
+		});
+	},
+
+	/**
+	 * Межстраничная реклама. Показывать в логических паузах.
+	 * @param {function} [onClose]
+	 */
+	showInterstitial: function (onClose)
+	{
+		if (!this.ysdk)
+		{
+			if (onClose) onClose();
+			return;
+		}
+
+		var self = this;
+		this.ysdk.adv.showFullscreenAdv(
+		{
+			callbacks:
+			{
+				onOpen: function ()
+				{
+					SoundManager.pauseAll();
+					self.gameplayStop();
+				},
+				onClose: function ()
+				{
+					SoundManager.resumeAll();
+					self.gameplayStart();
+					if (onClose) onClose();
+				},
+				onError: function ()
+				{
+					SoundManager.resumeAll();
+					self.gameplayStart();
+					if (onClose) onClose();
+				},
+			},
+		});
+	},
+};
+
+/**
+ * Централизованное управление звуком.
+ * Все Audio-объекты регистрируются через register() для автоматической
+ * паузы при рекламе и сворачивании вкладки.
+ */
+var SoundManager =
+{
+	_muted: false,
+	_pausedBySystem: false,
+	_audioElements: [],
+
+	/**
+	 * @returns {boolean} — true если звук выключен
+	 */
+	toggleMute: function ()
+	{
+		this._muted = !this._muted;
+		CONFIG.SOUND_ENABLED = !this._muted;
+
+		if (this._muted)
+			this._muteAll();
+		else
+			this._unmuteAll();
+
+		return this._muted;
+	},
+
+	isMuted: function ()
+	{
+		return this._muted;
+	},
+
+	pauseAll: function ()
+	{
+		this._pausedBySystem = true;
+		for (var i = 0; i < this._audioElements.length; i++)
+			try { this._audioElements[i].pause(); } catch (e) {}
+	},
+
+	/**
+	 * Возобновление после системной паузы.
+	 * Не автовоспроизводит — игра сама решает что играть при resume.
+	 */
+	resumeAll: function ()
+	{
+		this._pausedBySystem = false;
+	},
+
+	_muteAll: function ()
+	{
+		for (var i = 0; i < this._audioElements.length; i++)
+			try { this._audioElements[i].muted = true; } catch (e) {}
+	},
+
+	_unmuteAll: function ()
+	{
+		for (var i = 0; i < this._audioElements.length; i++)
+			try { this._audioElements[i].muted = false; } catch (e) {}
+	},
+
+	/**
+	 * @param {HTMLAudioElement} audio
+	 */
+	register: function (audio)
+	{
+		this._audioElements.push(audio);
+		if (this._muted)
+			try { audio.muted = true; } catch (e) {}
+	},
 };

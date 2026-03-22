@@ -1,197 +1,453 @@
-/* === Базовые стили — шаблон Яндекс Игры === */
+/* ============================================================
+   Шаблон Яндекс Игры — UI Kit
+   Нейтральная тёмная тема, минимализм
+   ============================================================ */
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+:root
+{
+	/* Фон */
+	--c-bg:        #111114;
+	--c-bg-2:      #19191e;
+
+	/* Поверхности */
+	--c-surface:   #1e1e24;
+	--c-surface-2: #26262e;
+	--c-surface-3: #2e2e38;
+
+	/* Бордеры */
+	--c-border:    rgba(255, 255, 255, 0.06);
+	--c-border-2:  rgba(255, 255, 255, 0.1);
+
+	/* Текст */
+	--c-text:      #e8e8ed;
+	--c-text-2:    #8e8e9a;
+	--c-text-3:    #5a5a66;
+
+	/* Акцент — один спокойный цвет */
+	--c-accent:    #6c7bef;
+	--c-accent-hover: #8290f5;
+	--c-accent-muted: rgba(108, 123, 239, 0.12);
+
+	/* Радиусы */
+	--radius-sm:   8px;
+	--radius-md:   14px;
+	--radius-lg:   20px;
+	--radius-xl:   28px;
+
+	/* Анимации */
+	--ease:        cubic-bezier(0.4, 0, 0.2, 1);
+	--duration:    0.18s;
 }
 
-body {
-  font-family: 'Inter', sans-serif;
-  background: #0a0a1a;
-  color: #ffffff;
-  min-height: 100vh;
-  overflow: hidden;
-  -webkit-tap-highlight-color: transparent;
-  user-select: none;
+/* --- Reset & платформенные требования --- */
+*,
+*::before,
+*::after
+{
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
 }
 
-#app {
-  width: 100vw;
-  height: 100vh;
-  position: relative;
+html { overflow: hidden; overscroll-behavior: none; }
+
+body
+{
+	font-family: 'Inter', system-ui, -apple-system, sans-serif;
+	background: var(--c-bg);
+	color: var(--c-text);
+	min-height: 100vh;
+	min-height: 100dvh;
+	overflow: hidden;
+	overscroll-behavior: none;
+	-webkit-tap-highlight-color: transparent;
+	user-select: none;
+	-webkit-user-select: none;
+	touch-action: manipulation;
+	-webkit-touch-callout: none;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
 }
 
-/* === Экраны === */
-
-.screen {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: none;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 16px 12px 32px;
+/* ============================================================
+   Корневой контейнер
+   ============================================================ */
+.g-app
+{
+	width: 100vw;
+	height: 100vh;
+	height: 100dvh;
+	position: relative;
+	overflow: hidden;
 }
 
-.screen.active {
-  display: flex;
+/* ============================================================
+   Блок: screen
+   ============================================================ */
+.screen
+{
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	display: none;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: 20px 16px env(safe-area-inset-bottom, 20px);
+	overflow: hidden;
+	z-index: 1;
 }
 
-/* === Меню === */
+.screen.is-active { display: flex; }
 
-.menu-container {
-  text-align: center;
+.screen--overlay
+{
+	background: rgba(17, 17, 20, 0.85);
+	backdrop-filter: blur(10px);
+	-webkit-backdrop-filter: blur(10px);
 }
 
-.game-title {
-  font-size: 2.5rem;
-  font-weight: 800;
-  background: linear-gradient(135deg, #ff6b9d, #818cf8, #67e8f9);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin-bottom: 8px;
+/* ============================================================
+   Блок: menu
+   ============================================================ */
+.menu
+{
+	text-align: center;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 6px;
 }
 
-.game-subtitle {
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 1rem;
-  margin-bottom: 32px;
+.menu__title
+{
+	font-size: clamp(2rem, 8vw, 3rem);
+	font-weight: 800;
+	line-height: 1.1;
+	letter-spacing: -0.025em;
+	color: var(--c-text);
 }
 
-/* === Кнопки === */
-
-.btn {
-  display: block;
-  width: 220px;
-  margin: 8px auto;
-  padding: 14px 24px;
-  border: none;
-  border-radius: 14px;
-  font-family: 'Inter', sans-serif;
-  font-size: 1rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: transform 0.15s, box-shadow 0.15s;
-  -webkit-tap-highlight-color: transparent;
+.menu__subtitle
+{
+	color: var(--c-text-3);
+	font-size: 0.95rem;
+	font-weight: 400;
+	margin-bottom: 32px;
 }
 
-.btn:active {
-  transform: scale(0.96);
+/* ============================================================
+   Блок: btn
+   ============================================================ */
+.btn
+{
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 240px;
+	margin: 5px auto;
+	padding: 14px 28px;
+	border: none;
+	border-radius: var(--radius-md);
+	font-family: 'Inter', system-ui, sans-serif;
+	font-size: 0.95rem;
+	font-weight: 600;
+	letter-spacing: 0.01em;
+	cursor: pointer;
+	transition:
+		transform var(--duration) var(--ease),
+		background var(--duration) var(--ease),
+		box-shadow var(--duration) var(--ease);
+	-webkit-tap-highlight-color: transparent;
+	touch-action: manipulation;
+	min-height: 50px;
 }
 
-.btn-primary {
-  background: linear-gradient(135deg, #ff6b9d, #c084fc);
-  color: #fff;
-  box-shadow: 0 4px 20px rgba(255, 107, 157, 0.3);
+.btn:active { transform: scale(0.96); }
+
+/* --- primary --- */
+.btn--primary
+{
+	background: var(--c-accent);
+	color: #fff;
+	box-shadow: 0 2px 12px var(--c-accent-muted);
 }
 
-.btn-primary:hover {
-  box-shadow: 0 6px 28px rgba(255, 107, 157, 0.5);
+.btn--primary:hover
+{
+	background: var(--c-accent-hover);
+	box-shadow: 0 4px 20px var(--c-accent-muted);
 }
 
-.btn-secondary {
-  background: rgba(255, 255, 255, 0.08);
-  color: #fff;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+.btn--primary:active
+{
+	background: var(--c-accent);
+	box-shadow: 0 1px 6px var(--c-accent-muted);
 }
 
-.btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.12);
+/* --- secondary --- */
+.btn--secondary
+{
+	background: var(--c-surface-2);
+	color: var(--c-text-2);
+	border: 1px solid var(--c-border-2);
 }
 
-/* === Игровой экран === */
-
-.game-header {
-  width: 100%;
-  max-width: 400px;
-  display: flex;
-  justify-content: center;
-  margin-bottom: 16px;
+.btn--secondary:hover
+{
+	background: var(--c-surface-3);
+	color: var(--c-text);
 }
 
-.score-display {
-  background: rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(12px);
-  border-radius: 12px;
-  padding: 8px 24px;
-  text-align: center;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+.btn--secondary:active { background: var(--c-surface-2); }
+
+/* --- icon --- */
+.btn--icon
+{
+	width: 46px;
+	height: 46px;
+	min-height: 46px;
+	margin: 0;
+	padding: 0;
+	border: 1px solid var(--c-border);
+	border-radius: var(--radius-sm);
+	background: var(--c-surface);
+	color: var(--c-text-3);
+	font-size: 1.1rem;
 }
 
-.score-label {
-  display: block;
-  font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.5);
-  text-transform: uppercase;
-  letter-spacing: 1px;
+.btn--icon:hover
+{
+	background: var(--c-surface-2);
+	color: var(--c-text-2);
 }
 
-.score-value {
-  display: block;
-  font-size: 1.5rem;
-  font-weight: 800;
-  color: #ff6b9d;
+.btn--icon:active { background: var(--c-surface-3); }
+
+.btn--icon.is-active
+{
+	color: var(--c-accent);
+	border-color: var(--c-accent-muted);
 }
 
-#game-canvas {
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+/* ============================================================
+   Блок: game
+   ============================================================ */
+.game__header
+{
+	width: 100%;
+	max-width: 420px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 14px;
+	padding: 0 4px;
+	gap: 12px;
 }
 
-/* === Game Over === */
-
-.modal-content {
-  background: rgba(20, 20, 40, 0.95);
-  backdrop-filter: blur(20px);
-  border-radius: 20px;
-  padding: 32px 28px;
-  text-align: center;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
-  max-width: 340px;
-  width: 90%;
-  max-height: 85vh;
-  overflow-y: auto;
+.game__controls
+{
+	display: flex;
+	gap: 6px;
 }
 
-.modal-content h2 {
-  font-size: 1.5rem;
-  margin-bottom: 12px;
-  background: linear-gradient(135deg, #ff6b9d, #c084fc);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+.game__canvas
+{
+	border-radius: var(--radius-md);
+	background: var(--c-surface);
+	border: 1px solid var(--c-border);
+	touch-action: none;
+	max-width: 100%;
+	max-height: 68vh;
 }
 
-.final-score {
-  font-size: 1.1rem;
-  color: rgba(255, 255, 255, 0.7);
-  margin-bottom: 24px;
+/* ============================================================
+   Блок: score
+   ============================================================ */
+.score
+{
+	background: var(--c-surface);
+	border-radius: var(--radius-md);
+	padding: 8px 24px;
+	text-align: center;
+	border: 1px solid var(--c-border);
 }
 
-/* === Адаптив === */
-
-@media (max-height: 600px) {
-  .game-title {
-    font-size: 1.8rem;
-  }
-  .btn {
-    padding: 10px 20px;
-    font-size: 0.9rem;
-  }
+.score__label
+{
+	display: block;
+	font-size: 0.6rem;
+	color: var(--c-text-3);
+	text-transform: uppercase;
+	letter-spacing: 1.5px;
+	font-weight: 600;
 }
 
-@media (max-width: 380px) {
-  .game-title {
-    font-size: 2rem;
-  }
-  #game-canvas {
-    max-width: 95vw;
-  }
+.score__value
+{
+	display: block;
+	font-size: 1.5rem;
+	font-weight: 800;
+	color: var(--c-text);
+	line-height: 1.2;
+}
+
+/* ============================================================
+   Блок: modal
+   ============================================================ */
+.modal
+{
+	background: var(--c-bg-2);
+	border-radius: var(--radius-xl);
+	padding: 36px 32px 28px;
+	text-align: center;
+	border: 1px solid var(--c-border-2);
+	box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
+	max-width: 340px;
+	width: 90%;
+	max-height: 85vh;
+	overflow-y: auto;
+}
+
+.modal__title
+{
+	font-size: 1.5rem;
+	font-weight: 800;
+	margin-bottom: 8px;
+	letter-spacing: -0.01em;
+	color: var(--c-text);
+}
+
+.modal__score
+{
+	font-size: 0.9rem;
+	color: var(--c-text-3);
+	margin-bottom: 24px;
+	font-weight: 500;
+}
+
+.modal__score-value
+{
+	font-weight: 800;
+	font-size: 2rem;
+	display: block;
+	margin-top: 4px;
+	color: var(--c-text);
+}
+
+/* ============================================================
+   Scrollbar
+   ============================================================ */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+
+::-webkit-scrollbar-thumb
+{
+	background: var(--c-surface-3);
+	border-radius: 4px;
+}
+
+/* ============================================================
+   Адаптив
+   ============================================================ */
+@media (max-height: 600px)
+{
+	.menu__title { font-size: clamp(1.5rem, 6vw, 2rem); }
+
+	.menu__subtitle
+	{
+		margin-bottom: 16px;
+		font-size: 0.85rem;
+	}
+
+	.btn
+	{
+		padding: 11px 20px;
+		font-size: 0.9rem;
+		min-height: 44px;
+		width: 200px;
+		margin: 4px auto;
+	}
+
+	.modal
+	{
+		padding: 24px 20px 20px;
+		border-radius: var(--radius-lg);
+	}
+
+	.modal__title { font-size: 1.25rem; }
+	.score { padding: 6px 16px; }
+	.score__value { font-size: 1.25rem; }
+	.game__header { margin-bottom: 8px; }
+}
+
+@media (max-width: 380px)
+{
+	.menu__title { font-size: clamp(1.6rem, 7vw, 2.2rem); }
+	.btn { width: 200px; }
+	.game__canvas { max-width: 95vw; }
+	.modal { width: 92%; padding: 28px 20px 24px; }
+	.score { padding: 6px 16px; }
+}
+
+@media (min-width: 768px)
+{
+	.btn
+	{
+		width: 280px;
+		padding: 15px 32px;
+		font-size: 1rem;
+	}
+
+	.game__header { max-width: 480px; }
+
+	.modal
+	{
+		max-width: 380px;
+		padding: 40px 36px 32px;
+	}
+
+	.modal__title { font-size: 1.7rem; }
+	.modal__score-value { font-size: 2.4rem; }
+}
+
+@media (max-height: 440px) and (orientation: landscape)
+{
+	.screen { padding: 8px 16px; }
+	.menu__title { font-size: 1.5rem; }
+
+	.menu__subtitle
+	{
+		margin-bottom: 10px;
+		font-size: 0.8rem;
+	}
+
+	.btn
+	{
+		padding: 10px 16px;
+		min-height: 40px;
+		width: 180px;
+		margin: 3px auto;
+		font-size: 0.85rem;
+	}
+
+	.game__header { margin-bottom: 4px; }
+	.game__canvas { max-height: 58vh; }
+
+	.modal
+	{
+		padding: 16px 16px 14px;
+		border-radius: var(--radius-md);
+	}
+
+	.modal__title
+	{
+		font-size: 1.1rem;
+		margin-bottom: 6px;
+	}
+
+	.modal__score { margin-bottom: 12px; }
+	.modal__score-value { font-size: 1.4rem; }
 }

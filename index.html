@@ -1,58 +1,72 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Моя игра</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
-  <script src="https://yandex.ru/games/sdk/v2"></script>
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/Draggable.min.js"></script>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<title>Моя игра</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="styles.css">
+	<script src="https://yandex.ru/games/sdk/v2"></script>
+	<script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/Draggable.min.js"></script>
 </head>
-<body>
-  <div id="app">
+<body oncontextmenu="return false">
+	<div class="g-app" id="app">
 
-    <!-- Главное меню -->
-    <div class="screen active" id="screen-menu">
-      <div class="menu-container">
-        <h1 class="game-title">Моя игра</h1>
-        <p class="game-subtitle">Описание игры</p>
-        <button class="btn btn-primary" id="btn-play">Играть</button>
-      </div>
-    </div>
+		<!-- Главное меню -->
+		<div class="screen is-active" id="screen-menu">
+			<div class="menu">
+				<h1 class="menu__title" data-i18n="game.title">Моя игра</h1>
+				<p class="menu__subtitle" data-i18n="game.description">Описание игры</p>
+				<button class="btn btn--primary" id="btn-play" data-i18n="btn.play">Играть</button>
+			</div>
+		</div>
 
-    <!-- Игровой экран -->
-    <div class="screen" id="screen-game">
-      <div class="game-header">
-        <div class="score-display">
-          <span class="score-label">Очки</span>
-          <span class="score-value" id="score">0</span>
-        </div>
-      </div>
-      <canvas id="game-canvas" width="360" height="360"></canvas>
-    </div>
+		<!-- Игровой экран -->
+		<div class="screen" id="screen-game">
+			<div class="game__header">
+				<div class="score">
+					<span class="score__label" data-i18n="score.label">Очки</span>
+					<span class="score__value" id="score">0</span>
+				</div>
+				<div class="game__controls">
+					<button class="btn btn--icon" id="btn-sound" aria-label="Звук" data-i18n="btn.sound" data-i18n-attr="aria-label">&#128266;</button>
+					<button class="btn btn--icon" id="btn-pause" aria-label="Пауза" data-i18n="btn.pause" data-i18n-attr="aria-label">&#9208;</button>
+				</div>
+			</div>
+			<canvas class="game__canvas" id="game-canvas" width="360" height="360"></canvas>
+		</div>
 
-    <!-- Game Over -->
-    <div class="screen" id="screen-gameover">
-      <div class="modal-content">
-        <h2>Игра окончена</h2>
-        <p class="final-score">Очки: <span id="final-score">0</span></p>
-        <button class="btn btn-primary" id="btn-restart">Заново</button>
-        <button class="btn btn-secondary" id="btn-menu">Меню</button>
-      </div>
-    </div>
+		<!-- Экран паузы -->
+		<div class="screen screen--overlay" id="screen-pause">
+			<div class="modal">
+				<h2 class="modal__title" data-i18n="btn.pause">Пауза</h2>
+				<button class="btn btn--primary" id="btn-resume" data-i18n="btn.resume">Продолжить</button>
+				<button class="btn btn--secondary" id="btn-pause-menu" data-i18n="btn.menu">Меню</button>
+			</div>
+		</div>
 
-  </div>
+		<!-- Game Over -->
+		<div class="screen" id="screen-gameover">
+			<div class="modal">
+				<h2 class="modal__title" data-i18n="game-over.title">Игра окончена</h2>
+				<p class="modal__score"><span data-i18n="score.result">Очки:</span> <span class="modal__score-value" id="final-score">0</span></p>
+				<button class="btn btn--primary" id="btn-restart" data-i18n="btn.restart">Заново</button>
+				<button class="btn btn--secondary" id="btn-menu" data-i18n="btn.menu">Меню</button>
+			</div>
+		</div>
 
-  <!-- Скрипты в порядке зависимостей -->
-  <script src="src/config.js"></script>
-  <script src="src/game.js"></script>
-  <script src="src/render.js"></script>
-  <script src="src/progress.js"></script>
-  <script src="src/yandex-sdk.js"></script>
-  <script src="src/main.js"></script>
+	</div>
+
+	<!-- Скрипты в порядке зависимостей -->
+	<script src="src/config.js"></script>
+	<script src="src/i18n.js"></script>
+	<script src="src/game.js"></script>
+	<script src="src/render.js"></script>
+	<script src="src/progress.js"></script>
+	<script src="src/yandex-sdk.js"></script>
+	<script src="src/main.js"></script>
 </body>
 </html>
